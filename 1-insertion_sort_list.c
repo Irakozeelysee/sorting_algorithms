@@ -2,6 +2,41 @@
 #include "sort.h"
 
 /**
+ * insertion_sort_list - Sorts a doubly linked list using
+ * Insertion Sort algorithm
+ * @list: Doubly linked list
+ */
+void insertion_sort_list(listint_t **list)
+{
+	listint_t *tmp, *prev;
+
+	if (list == NULL || (*list)->next == NULL)
+		return;
+	tmp = *list;
+	while (tmp->next != NULL)
+	{
+		if (tmp->n > tmp->next->n)
+		{
+			prev = tmp->next;
+			tmp->next->prev = tmp->prev;
+			tmp->next = prev->next;
+			tmp->prev = prev;
+			prev->next = tmp;
+			if (prev->prev != NULL)
+				prev->prev->next = prev;
+			else
+				*list = prev;
+			if (tmp->next != NULL)
+				tmp->next->prev = tmp;
+			print_list(*list);
+			sortBackward(list, prev);
+		}
+		else
+			tmp = tmp->next;
+	}
+}
+
+/**
  * sortBackward - Sorts a node going backward of the list
  * @list: Doubly linked list
  * @node: Node to sort
@@ -19,47 +54,16 @@ void sortBackward(listint_t **list, listint_t *node)
 			node->prev = tmp->prev;
 			node->next = tmp;
 			tmp->prev = node;
-			if (tmp->next != NULL)
-				tmp->next->prev = tmp;
+			tmp->next->prev = tmp;
 			if (node->prev != NULL)
 				node->prev->next = node;
 			else
 				*list = node;
 			print_list(*list);
-			sortBackward(list, node);
+			if (node->prev != NULL)
+				sortBackward(list, node);
 		}
-	}
-}
-/**
- * insertion_sort_list - Sorts a doubly linked list using
- * Insertion Sort algorithm
- * @list: Doubly linked list
- */
-void insertion_sort_list(listint_t **list)
-{
-	listint_t *current = (*list)->next;
-
-	if (list == NULL || *list == NULL || (*list)->next == NULL)
-		return;
-	while (current != NULL)
-	{
-		listint_t *temp = current;
-
-		while (temp->prev != NULL && temp->n < temp->prev->n)
-		{
-			temp->prev->next = temp->next;
-			if (temp->next != NULL)
-				temp->next->prev = temp->prev;
-			temp->next = temp->prev;
-			temp->prev = temp->prev->prev;
-			temp->next->prev = temp;
-			if (temp->prev == NULL)
-				*list = temp;
-			else
-				temp->prev->next = temp;
-			print_list(*list);
-			sortBackward(list, temp);
-		}
-		current = current->next;
+		else
+			return;
 	}
 }
